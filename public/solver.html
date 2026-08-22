@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OptiNexus | Gemini AI Autonomous Route Margin Solver</title>
+  <meta name="description" content="Spatial frosted glass console for Gemini AI autonomous constraint solving and route margin optimization.">
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="spatial-hud-body">
+  <script>
+    // Kick back to NFC start screen if refreshed
+    if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+      window.location.href = "/";
+    }
+  </script>
+
+  <!-- 1. FULL-SCREEN FIXED SPATIAL MAP CANVAS (Z-INDEX: 0) -->
+  <div id="tacticalMap" class="fullscreen-spatial-map">
+    <!-- NEW EXPANDED GLOBAL HUBS -->
+    <div class="map-node" style="position: absolute; top: 38%; left: 24%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">MEMPHIS (US)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 46%; left: 63%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">DUBAI (UAE)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 44%; left: 70%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">DELHI (IN)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 48%; left: 81%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">SHENZHEN (CN)</span>
+    </div>
+  </div>
+
+  <!-- 2. HUD SPATIAL GLASS OVERLAY (Z-INDEX: 10, POINTER-EVENTS: NONE) -->
+  <div class="spatial-hud-overlay">
+    
+    <!-- FLOATING GLASS SIDEBAR (POINTER-EVENTS: AUTO) -->
+    <aside class="sidebar floating-glass-panel">
+      <div class="sidebar-brand">
+        <div class="brand-badge-icon">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div class="brand-meta">
+          <div class="brand-title">OPTINEXUS</div>
+          <div class="brand-subtitle">SPATIAL HUD</div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <span class="nav-category">CORE CONSOLE</span>
+        
+        <a href="dashboard.html" class="nav-item">
+          <i class="fa-solid fa-earth-americas"></i>
+          <span>Global Fleet & Map</span>
+          <span class="nav-pill">LIVE</span>
+        </a>
+
+        <a href="solver.html" class="nav-item active">
+          <i class="fa-solid fa-brain-circuit"></i>
+          <span>Gemini AI Solver</span>
+          <span class="nav-pill pill-ai">ACTIVE</span>
+        </a>
+
+        <span class="nav-category">HARDWARE GATEWAY</span>
+
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-lock"></i>
+          <span>NFC Batch Scanner</span>
+          <span class="nav-pill pill-locked">LOCKED</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Bottom System HUD -->
+      <div class="sidebar-bottom">
+        <div class="operator-badge">
+          <div class="operator-avatar"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="operator-info">
+            <strong>DRV-ALEX-RIVERA</strong>
+            <span>Lead Dispatcher • TSMC Fab 18</span>
+          </div>
+        </div>
+        <div class="system-ping-status">
+          <span class="pulse-emerald"></span>
+          <span>GEMINI 3.6 FLASH: ACTIVE</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- FLOATING MAIN CONTENT AREA -->
+    <main class="main-content-wrapper">
+      
+      <!-- Floating Top Bar -->
+      <header class="top-nav-bar floating-glass-panel">
+        <div class="top-bar-left">
+          <div class="page-title-group">
+            <h1>Gemini Autonomous Route Margin Optimizer</h1>
+            <p>Multi-modal constraint solving & autonomous margin expansion engine</p>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <div class="time-pill" id="zuluTimePill">00:00:00 UTC</div>
+          <a href="dashboard.html" class="btn-top-action">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Fleet Corridors</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- 2-Column Split: Floating Glass Parameter Card & Floating Solution Deck -->
+      <div class="solver-grid">
+        
+        <!-- Left: Dispatch Parameter Glass Form -->
+        <section class="content-card floating-glass-panel">
+          <div class="card-header-bar">
+            <div class="header-left-info">
+              <i class="fa-solid fa-sliders icon-cyan"></i>
+              <h2>Mission Constraints & Dispatch Parameters</h2>
+            </div>
+            <span class="badge-status badge-ai">GEMINI 3.6 FLASH</span>
+          </div>
+
+          <form id="optimizerForm" class="executive-form">
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label><i class="fa-solid fa-building-flag"></i> Origin Fab Hub</label>
+                <select id="optOrigin" name="origin">
+                  <option value="TSMC Fab 18 (Hsinchu, Taiwan)">TSMC Fab 18 (Hsinchu, TW)</option>
+                  <option value="ASML Optics Facility (Veldhoven, NL)">ASML Veldhoven (Netherlands)</option>
+                  <option value="Samsung Pyeongtaek Fab (Seoul, Korea)">Samsung Pyeongtaek (Korea)</option>
+                  <option value="GlobalFoundries Dresden (Germany)">GlobalFoundries Dresden (Germany)</option>
+                  <option value="Delhi IGI (IN)">Delhi IGI (IN)</option>
+                  <option value="Dubai Al Maktoum (UAE)">Dubai Al Maktoum (UAE)</option>
+                  <option value="Memphis SuperHub (US)">Memphis SuperHub (US)</option>
+                  <option value="Shenzhen Port (CN)">Shenzhen Port (CN)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-location-dot"></i> Destination Assembly</label>
+                <select id="optDestination" name="destination">
+                  <option value="Austin Giga Assembly (Texas, USA)">Austin Giga Assembly (TX, USA)</option>
+                  <option value="Munich Automotive Hub (Germany)">Munich Auto Hub (Germany)</option>
+                  <option value="Phoenix MegaFab (Arizona, USA)">Phoenix MegaFab (AZ, USA)</option>
+                  <option value="Tokyo AI Datacenter (Japan)">Tokyo AI Cluster (Japan)</option>
+                  <option value="Delhi IGI (IN)">Delhi IGI (IN)</option>
+                  <option value="Dubai Al Maktoum (UAE)">Dubai Al Maktoum (UAE)</option>
+                  <option value="Memphis SuperHub (US)">Memphis SuperHub (US)</option>
+                  <option value="Shenzhen Port (CN)">Shenzhen Port (CN)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row three-col">
+              <div class="form-group">
+                <label><i class="fa-solid fa-truck-plane"></i> Transport Unit</label>
+                <select id="optVehicle" name="transportUnit">
+                  <option value="FLIGHT-TW-TX">FLIGHT-TW-TX (Boeing 777-F Cargo)</option>
+                  <option value="TRUCK-EU-02">TRUCK-EU-02 (Heavy Armor Cryo-Van)</option>
+                  <option value="VESSEL-PAC-09">VESSEL-PAC-09 (Container Vessel)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-weight-hanging"></i> Cargo Mass (kg)</label>
+                <input type="number" id="optPayload" value="14500" min="500" max="60000" step="500">
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-clock"></i> Max Continuous HOS</label>
+                <input type="number" id="optHosLimit" value="8" min="2" max="14">
+              </div>
+            </div>
+
+            <div class="form-options-row">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="optTolls" checked>
+                <span class="checkmark"></span>
+                Dynamic Toll & Air Arbitrage
+              </label>
+              <label class="custom-checkbox">
+                <input type="checkbox" id="optSla" checked>
+                <span class="checkmark"></span>
+                Hard Cryo SLA Guarantee
+              </label>
+            </div>
+
+            <button type="submit" id="btn-run-ai-solver" class="btn-optimize-main">
+              <span class="btn-text"><i class="fa-solid fa-bolt-lightning"></i> Execute Autonomous Route Optimization</span>
+              <span class="btn-loading" style="display: none;"><i class="fa-solid fa-circle-notch fa-spin"></i> Gemini Solving Constraints...</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- Right: Floating Glass Optimization Output Deck -->
+        <section class="content-card floating-glass-panel">
+          <div class="card-header-bar">
+            <div class="header-left-info">
+              <i class="fa-solid fa-chart-pie icon-cyan"></i>
+              <h2>Optimization Synthesis & Financial Lift</h2>
+            </div>
+            <span class="badge-status" id="out-job-id">JOB: STANDBY</span>
+          </div>
+
+          <!-- API Budget Utilization Widget -->
+          <div class="api-budget-widget" id="apiBudgetWidget">
+            <div class="budget-top-row">
+              <div class="budget-title-wrap">
+                <i class="fa-solid fa-credit-card text-amber"></i>
+                <span class="budget-title">MONTHLY API BUDGET UTILIZATION</span>
+                <span class="badge-strict-limit">HARD CAP: $1,500/MO</span>
+              </div>
+              <div class="budget-stat-digits">
+                <strong class="text-cyan" id="budgetCurrentVal">$412.00</strong>
+                <span class="budget-sep">/</span>
+                <span class="budget-max" id="budgetMaxVal">$1,500.00</span>
+                <span class="budget-pct-pill" id="budgetPctPill">27.5%</span>
+              </div>
+            </div>
+            
+            <div class="budget-track">
+              <div class="budget-fill-bar" id="budgetFillBar" style="width: 27.47%;"></div>
+            </div>
+
+            <div class="budget-footer-row">
+              <span class="budget-status-text" id="budgetStatusText">
+                <i class="fa-solid fa-circle-check text-cyan"></i> Guard Active • 402 Threshold: $1,500.00
+              </span>
+              <span class="budget-remaining-text" id="budgetRemainingText">Remaining: $1,088.00</span>
+            </div>
+          </div>
+
+          <!-- Highlight Margin Lift Banner -->
+          <div class="result-highlight-banner">
+            <div class="result-margin-block">
+              <span class="result-lbl">NET MARGIN EXPANSION</span>
+              <div class="result-margin-val text-cyan" id="out-margin-lift">--%</div>
+            </div>
+            <div class="result-metrics-grid">
+              <div class="res-metric-item">
+                <span class="k">Projected Margin</span>
+                <strong class="v text-cyan" id="out-projected-margin">$0.00</strong>
+              </div>
+              <div class="res-metric-item">
+                <span class="k">Optimized Cost</span>
+                <strong class="v text-white" id="out-optimized-cost">$0.00</strong>
+              </div>
+              <div class="res-metric-item">
+                <span class="k">Baseline Cost</span>
+                <strong class="v text-muted" id="out-baseline-cost">$0.00</strong>
+              </div>
+              <div class="res-metric-item">
+                <span class="k">SLA Risk Level</span>
+                <strong class="v text-cyan" id="out-sla-risk">STANDBY</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waypoints Timeline Deck -->
+          <div class="waypoints-deck">
+            <div class="deck-title"><i class="fa-solid fa-route icon-cyan"></i> Autonomous Waypoint Milestones</div>
+            <div class="waypoints-timeline" id="out-waypoints-container">
+              <div class="timeline-step">
+                <div class="step-title">Awaiting Mission Execution</div>
+                <div class="step-desc">Configure dispatch parameters on the left to calculate optimal waypoints.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gemini AI Reasoning Narrative -->
+          <div class="reasoning-container">
+            <div class="reasoning-header">
+              <i class="fa-solid fa-brain-circuit icon-cyan"></i>
+              <strong>Gemini Senior Logistics Engineer Synthesis</strong>
+            </div>
+            <div class="reasoning-content" id="out-synthesis-text">
+              Configure mission parameters and execute solver to synthesize autonomous corridor constraints and margin lift via Google Gemini.
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- Floating Slim Bottom Scrolling Ticker -->
+      <footer class="bottom-ticker-bar floating-glass-panel">
+        <div class="ticker-prefix">
+          <i class="fa-solid fa-satellite-dish text-cyan"></i>
+          <span>CORRIDOR INTEL:</span>
+        </div>
+        <div class="ticker-scroll-area">
+          <div class="ticker-scroll-text" id="liveTickerText">
+            [TSMC-FAB18] 3nm FinFET Wafer Pod Cleared Customs // [ASML-VELDHOVEN] High-NA EUV Mirror in Cryo Transit // [MALACCA-STRAIT] Vessel Congestion Cleared // [GEMINI-AI] Real-time Corridor Margin Lift: +10.8% // [AUSTIN-GIGA] Cleanroom Bay Receiving Active //
+          </div>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  
+  <!-- Client Script -->
+  <script src="app.js?v=4"></script>
+</body>
+</html>

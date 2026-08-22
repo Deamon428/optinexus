@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OptiNexus | Edge HUD Spatial Logistics Command</title>
+  <meta name="description" content="Edge HUD spatial logistics console with open central viewport for global interactive corridor tracking.">
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="edge-hud-body">
+  <script>
+    // Kick back to NFC start screen if refreshed
+    if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+      window.location.href = "/";
+    }
+  </script>
+
+  <!-- 1. FULL-SCREEN FIXED MAP BACKGROUND (THE HERO VIEWPORT) -->
+  <div id="tacticalMap" class="fullscreen-spatial-map">
+    <!-- NEW EXPANDED GLOBAL HUBS -->
+    <div class="map-node" style="position: absolute; top: 38%; left: 24%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">MEMPHIS (US)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 46%; left: 63%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">DUBAI (UAE)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 44%; left: 70%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">DELHI (IN)</span>
+    </div>
+    <div class="map-node" style="position: absolute; top: 48%; left: 81%; z-index: 10;">
+        <span class="node-dot" style="background-color: #10b981; box-shadow: 0 0 8px #10b981; display: inline-block; width: 8px; height: 8px; border-radius: 50%;"></span>
+        <span class="node-label" style="color: #94a3b8; font-size: 0.7rem; margin-left: 5px; font-family: var(--font-mono, monospace);">SHENZHEN (CN)</span>
+    </div>
+  </div>
+
+  <!-- 2. EDGE HUD DOCKED OVERLAY (POINTER-EVENTS: NONE OVER CENTER VIEWPORT) -->
+  <div class="edge-hud-overlay">
+    
+    <!-- LEFT EDGE: FLOATING GLASS SIDEBAR (POINTER-EVENTS: AUTO) -->
+    <aside class="sidebar edge-docked-left floating-glass-panel">
+      <div class="sidebar-brand">
+        <div class="brand-badge-icon">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div class="brand-meta">
+          <div class="brand-title">OPTINEXUS</div>
+          <div class="brand-subtitle">EDGE HUD C2</div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <span class="nav-category">CORE CONSOLE</span>
+        
+        <a href="dashboard.html" class="nav-item active">
+          <i class="fa-solid fa-earth-americas"></i>
+          <span>Global Fleet & Map</span>
+          <span class="nav-pill">LIVE</span>
+        </a>
+
+        <a href="solver.html" class="nav-item nav-item-ai">
+          <i class="fa-solid fa-brain-circuit"></i>
+          <span>Gemini AI Solver</span>
+          <span class="nav-pill pill-ai">AI SOLVER</span>
+        </a>
+
+        <span class="nav-category">HARDWARE GATEWAY</span>
+
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-lock"></i>
+          <span>NFC Batch Scanner</span>
+          <span class="nav-pill pill-locked">LOCKED</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Bottom System Status -->
+      <div class="sidebar-bottom">
+        <div class="operator-badge">
+          <div class="operator-avatar"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="operator-info">
+            <strong>DRV-ALEX-RIVERA</strong>
+            <span>Lead Dispatcher • TSMC Fab 18</span>
+          </div>
+        </div>
+        <div class="system-ping-status">
+          <span class="pulse-emerald"></span>
+          <span>ORBITAL SYNC: 100%</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- TOP EDGE: FLOATING DOCKED TOP BAR (POINTER-EVENTS: AUTO) -->
+    <header class="top-nav-bar edge-docked-top floating-glass-panel">
+      <div class="top-bar-left">
+        <div class="page-title-group">
+          <h1>Global Semiconductor Corridors</h1>
+          <p>5 Active priority lanes • Open viewport for interactive pan & zoom</p>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="time-pill" id="zuluTimePill">00:00:00 UTC</div>
+        
+        <button id="simulatePingBtn" class="btn-top-action">
+          <i class="fa-solid fa-satellite-dish text-cyan"></i>
+          <span>Simulate Ping</span>
+        </button>
+
+        <button id="fitMapBtn" class="btn-top-action">
+          <i class="fa-solid fa-arrows-to-circle text-cyan"></i>
+          <span>Reset View</span>
+        </button>
+        
+        <a href="solver.html" class="btn-top-primary ai-cta-pulse">
+          <i class="fa-solid fa-bolt-lightning"></i>
+          <span>Launch AI Solver</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- RIGHT EDGE: VERTICALLY STACKED KPI SIDEBAR (POINTER-EVENTS: AUTO) -->
+    <aside class="right-kpi-sidebar edge-docked-right floating-glass-panel">
+      <div class="kpi-sidebar-header">
+        <i class="fa-solid fa-chart-line text-cyan"></i>
+        <span>TELEMETRY METRICS</span>
+      </div>
+
+      <div class="kpi-vertical-stack" style="display: flex !important; flex-direction: column !important; justify-content: flex-start !important; gap: 1.5rem !important; height: 100%;">
+        <!-- KPI 1: Active Corridors -->
+        <div class="kpi-mini-card">
+          <div class="kpi-top">
+            <span class="kpi-title">ACTIVE CORRIDORS</span>
+            <i class="fa-solid fa-route icon-cyan"></i>
+          </div>
+          <div class="kpi-main-val text-cyan">5 <span class="kpi-unit">Lanes</span></div>
+          <div class="kpi-sub"><i class="fa-solid fa-circle-check text-cyan"></i> Transpacific & EU</div>
+        </div>
+
+        <!-- KPI 2: AI Margin Expansion -->
+        <div class="kpi-mini-card highlight-card">
+          <div class="kpi-top">
+            <span class="kpi-title">AI MARGIN EXPANSION</span>
+            <i class="fa-solid fa-bolt icon-cyan"></i>
+          </div>
+          <div class="kpi-main-val text-cyan" id="kpiMarginDisplay">+10.8%</div>
+          <div class="kpi-sub">Arbitrage Active</div>
+        </div>
+
+        <!-- KPI 3: In-Transit Valuation -->
+        <div class="kpi-mini-card">
+          <div class="kpi-top">
+            <span class="kpi-title">IN-TRANSIT VALUATION</span>
+            <i class="fa-solid fa-boxes-stacked icon-cyan"></i>
+          </div>
+          <div class="kpi-main-val text-white">$1.42B</div>
+          <div class="kpi-sub"><i class="fa-solid fa-snowflake text-cyan"></i> 3nm Cryo Pods</div>
+        </div>
+
+        <!-- KPI 4: SLA Compliance -->
+        <div class="kpi-mini-card">
+          <div class="kpi-top">
+            <span class="kpi-title">SLA COMPLIANCE</span>
+            <i class="fa-solid fa-shield-check icon-cyan"></i>
+          </div>
+          <div class="kpi-main-val text-cyan">99.8%</div>
+          <div class="kpi-sub">On-Time Guaranteed</div>
+        </div>
+
+        <!-- KPI 5: API Engine Latency -->
+        <div style="margin-top: auto !important; padding: 1.25rem; background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;">
+                <span>API ENGINE LATENCY</span>
+                <span style="color: #10b981;">⚡️</span>
+            </div>
+            <div style="font-size: 2rem; font-weight: 700; color: #f8fafc; margin: 0.5rem 0;">
+                24<span style="font-size: 1rem; color: #94a3b8;">ms</span>
+            </div>
+            <div style="color: #64748b; font-size: 0.8rem; display: flex; align-items: center;">
+                <span style="color: #10b981; margin-right: 6px;">✓</span> Gemini 3.6 Flash
+            </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- BOTTOM EDGE: SLIM FLOATING CONSOLE DRAWER (POINTER-EVENTS: AUTO) -->
+    <section class="bottom-console-drawer edge-docked-bottom floating-glass-panel">
+      <div class="console-drawer-header">
+        <div class="header-left-info">
+          <span class="live-pill"><span class="dot-emerald"></span> LIVE TELEMETRY STREAM</span>
+          <span class="badge-count" id="tableRowCount">5 Active Units</span>
+        </div>
+        <div class="ticker-scroll-area">
+          <div class="ticker-scroll-text" id="liveTickerText">
+            [TSMC-FAB18] 3nm FinFET Wafer Pod Cleared Customs // [ASML-VELDHOVEN] High-NA EUV Mirror in Cryo Transit // [MALACCA-STRAIT] Vessel Congestion Cleared // [GEMINI-AI] Real-time Corridor Margin Lift: +10.8% // [AUSTIN-GIGA] Cleanroom Bay Receiving Active //
+          </div>
+        </div>
+      </div>
+
+      <div class="console-table-wrap">
+        <table class="exec-table compact-table">
+          <thead>
+            <tr>
+              <th>ASSET ID</th>
+              <th>TRADE CORRIDOR</th>
+              <th>VELOCITY / ALT</th>
+              <th>FUEL / POWER</th>
+              <th>NITROGEN CRYO</th>
+              <th>CARGO TYPE</th>
+              <th>VALUATION</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="telemetryTableBody">
+            <!-- Populated dynamically via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  
+  <!-- Client Script -->
+  <script src="app.js"></script>
+</body>
+</html>
